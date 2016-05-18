@@ -1,5 +1,5 @@
 #include "FastLED.h"
-
+#include <time.h>
 FASTLED_USING_NAMESPACE
 
 // FastLED "100-lines-of-code" demo reel, showing just a few 
@@ -15,11 +15,11 @@ FASTLED_USING_NAMESPACE
 #warning "Requires FastLED 3.1 or later; check github for latest code."
 #endif
 
-#define DATA_PIN    3
+#define DATA_PIN    7
 //#define CLK_PIN   4
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
-#define NUM_LEDS    64
+#define NUM_LEDS    289
 CRGB leds[NUM_LEDS];
 
 #define BRIGHTNESS          96
@@ -39,7 +39,7 @@ void setup() {
 
 // List of patterns to cycle through.  Each is defined as a separate function below.
 typedef void (*SimplePatternList[])();
-SimplePatternList gPatterns = { rainbow, rainbowWithGlitter, confetti, sinelon, juggle, bpm, something };
+SimplePatternList gPatterns = { rainbow,floweradvancement, rainbowWithGlitter, confetti, sinelon, juggle, bpm, snakechase };
 
 uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
@@ -123,10 +123,142 @@ void juggle() {
     dothue += 32;
   }
 }
-//The following function displays color at pixel at x,y coordinate
-void display(color,int x,int y){
-   leds[rectangulartodisplay(x,y)] = color;
+
+void snakechase(){
+  //The goal is to have a random color be choose and for snakes to chase each other between 5 and 10 times. 
+  //Snakes chasing each other means that two trails of light come in from either end.
+  for(int ledamount = 0; ledamount<289; ledamount++){
+    leds[ledamount]=CRGB::Black;
+  }
+  srand(time(NULL));
+  CRGB snake1color=CRGB(rand()%256;rand()%256;rand()%256);
+  CRGB snake2color=CRGB(rand()%256;rand()%256;rand()%256);
+  for(int timestep = 0; timestep < 145; timestep++){
+    leds[timestep]=snake1color;
+    leds[288-timestep]=snake2color;
+    FastLED.show();
+    delay(5);
+  }
+  
 }
+
+void floweradvancement(){
+  //The idea here is that you start with a randomly colored pixel in one of the corners. 
+  //At each timestep a fixed amount of the pixels attached to currently active pixels turn into a random color.
+  //After a fixed amount of timesteps the pattern ends.
+  for(int ledlength = 0; ledlength <289; ledlength++){
+    leds[ledlength]=CRGB::Black;
+  }
+  srand(time(NULL));
+  int frontier[];
+  frontier[0] = rand()%289;
+  leds[frontier[0]]=CRGB(rand()%256;rand()%256;rand()%256);
+  FastLED.show();
+  delay(100);
+  //while loop picks how many new elements it wants to add to frontier
+  //sees how many are feasible
+  
+  while(sizeof(frontier<250)){
+    int randomadvance = rand()%5;
+    int possiblearray[];
+    for(int j=0; j < randomadvance; j++){
+      possiblearray.push_back(floweradvancementhandler(std::random_shuffle(frontier.begin(),frontier.end())[0]));
+    }
+    for(int p=0;p < sizeof(possiblearray);p++){
+      if(std::find(frontier.begin(),frontier.end(),possiblearray[p]){
+      }
+      else{
+        leds[possiblearray[p]]=CRGB(rand()%256;rand()%256;rand()%256);
+      }
+  }
+     delay(5);
+     FastLED.show();
+}
+
+int floweradvancementhandler(int frontier){
+  srand(time(NULL));
+  //check if on edge or border
+  //return random one around it
+  //if 0 , 16 ,17, 33 mod 34
+  if(frontier == 0){
+    rand2=rand()%2;
+    if(rand2==0){
+      return 1
+    }
+    if(rand2==1){
+      return 33
+    }
+  }
+  else if(frontier==16){
+    rand2=rand()%2;
+    if(rand2==0){
+      return 15
+    }
+    if(rand2==1){
+      return 17
+    }
+  }
+  else if(frontier ==271){
+    rand2=rand()%2;
+    if(rand2==0){
+      return 270
+    }
+    if(rand2==1){
+      return 272
+    }
+  }
+  else if(frontier == 288){
+    rand2=rand()%2;
+    if(rand2==0){
+      return 287
+    }
+    if(rand2==1){
+      return 265
+    }
+  }
+  else if(frontier<17){
+    rand3=rand()%3;
+    if(rand3==0){
+      return frontier-1;
+    }
+    else if(rand3==1){
+      return frontier+17;
+    }
+    else{
+      return frontire+1;
+    }
+  }
+  else if(frontier>=271){
+    rand3=rand()%3;
+    if(rand3==0){
+      return frontier-1;
+    }
+    else if(rand3==1){
+      return frontier-17;
+    }
+    else{
+      return frontire+1;
+    }
+  }
+  else{
+    rand4=rand()%4;
+    if(rand4==0){
+      return frontier-17;
+    }
+    else if(rand4==1){
+      return frontier+1;
+    }
+    else if(rand4==2){
+      return frontier+17;
+    }
+    else{
+      return frontier-1;
+    }
+  }
+  
+}
+
+
 
 int rectangulartodisplay(int x,int y){
   //if y even then x normal
@@ -136,13 +268,8 @@ int rectangulartodisplay(int x,int y){
      return 17*y+p;
   }
   else{
-    int p = (-x)%17;
-    return 17*y+p;
+    return 17*(y+1)-x-1;
   }
-}
-
-void something(){
-  display(CRGB::White,3,4);
 }
 
 
