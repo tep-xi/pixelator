@@ -1,5 +1,4 @@
 #include "FastLED.h"
-#include <time.h>
 FASTLED_USING_NAMESPACE
 
 // FastLED "100-lines-of-code" demo reel, showing just a few 
@@ -34,12 +33,13 @@ void setup() {
 
   // set master brightness control
   FastLED.setBrightness(BRIGHTNESS);
+  srand(analogRead(0));
 }
 
 
 // List of patterns to cycle through.  Each is defined as a separate function below.
 typedef void (*SimplePatternList[])();
-SimplePatternList gPatterns = { rainbow,floweradvancement, rainbowWithGlitter, confetti, sinelon, juggle, bpm, snakechase };
+SimplePatternList gPatterns = {rainbow, floweradvancement, rainbowWithGlitter, confetti, sinelon, juggle, bpm, snakechase };
 
 uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
@@ -130,9 +130,9 @@ void snakechase(){
   for(int ledamount = 0; ledamount<289; ledamount++){
     leds[ledamount]=CRGB::Black;
   }
-  srand(time(NULL));
-  CRGB snake1color=CRGB(rand()%256;rand()%256;rand()%256);
-  CRGB snake2color=CRGB(rand()%256;rand()%256;rand()%256);
+  CRGB snake1color;
+  snake1color = CRGB(rand()%256,rand()%256,rand()%256);
+  CRGB snake2color=CRGB(rand()%256,rand()%256,rand()%256);
   for(int timestep = 0; timestep < 145; timestep++){
     leds[timestep]=snake1color;
     leds[288-timestep]=snake2color;
@@ -142,125 +142,110 @@ void snakechase(){
   
 }
 
-void floweradvancement(){
-  //The idea here is that you start with a randomly colored pixel in one of the corners. 
-  //At each timestep a fixed amount of the pixels attached to currently active pixels turn into a random color.
-  //After a fixed amount of timesteps the pattern ends.
-  for(int ledlength = 0; ledlength <289; ledlength++){
-    leds[ledlength]=CRGB::Black;
+void floweradvancement()
+{
+  CRGB nextleds[NUM_LEDS];
+  int fullCount = 0;
+  int emptyCount = 0;
+  for(int x = 0; x < 17; x++)
+  {
+    for(int y = 0; y <17; y++)
+    {
+        if(leds[pxmap(x, y)] != CRGB(0,0,0))
+        {
+            nextleds[pxmap(x,y)] = leds[pxmap(x,y)];
+            fullCount++;
+            continue;
+        }
+        emptyCount++;
+          
+        bool above = y > 0 && leds[pxmap(x,y - 1)] != CRGB(0,0,0);
+        bool below = y < 16 && leds[pxmap(x,y + 1)] != CRGB(0,0,0);
+        bool left = x > 0 && leds[pxmap(x - 1,y)] != CRGB(0,0,0);
+        bool right = x < 16 && leds[pxmap(x + 1,y)] != CRGB(0,0,0);
+
+        if((above && below && left && right) && rand()%100 > 80)
+        {
+            CRGBPalette16 palette = PartyColors_p;
+            uint8_t beat = beatsin8( 62, 64, 255);
+            nextleds[pxmap(x, y)] = ColorFromPalette(palette, gHue+rand()%500, beat-gHue+rand()%2000);
+        }
+        else if(((above && below && right) | (above && below && left) | (above&&left&&right) | (below && left && right)) && rand()%100 > 70){
+          CRGBPalette16 palette = PartyColors_p;
+            uint8_t beat = beatsin8( 62, 64, 255);
+            nextleds[pxmap(x, y)] = ColorFromPalette(palette, gHue+rand()%500, beat-gHue+rand()%2000);
+        }
+        else if(((above&&right)|(above&&left)|(above&&below)|(below&&right)|(below&&left)|(left&&right))&&rand()%100 > 60){
+          CRGBPalette16 palette = PartyColors_p;
+            uint8_t beat = beatsin8( 62, 64, 255);
+            nextleds[pxmap(x, y)] = ColorFromPalette(palette, gHue+rand()%500, beat-gHue+rand()%2000);
+        }
+        else if((above|below|right|left)&&rand()%100>50){
+          CRGBPalette16 palette = PartyColors_p;
+            uint8_t beat = beatsin8( 62, 64, 255);
+            nextleds[pxmap(x, y)] = ColorFromPalette(palette, gHue+rand()%500, beat-gHue+rand()%2000);
+        }
+        else
+        {
+          nextleds[pxmap(x, y)] = CRGB(0,0,0);
+        }
+    }   
+  }  
+ 
+  if(fullCount == 289 || emptyCount == 289)
+  {
+    for(int i = 0; i < 289; i++)
+    {
+      nextleds[i] = CRGB(0,0,0);
+    }
+    nextleds[pxmap(rand()%17,rand()%17)] = CRGB::Blue;
   }
-  srand(time(NULL));
-  int frontier[];
-  frontier[0] = rand()%289;
-  leds[frontier[0]]=CRGB(rand()%256;rand()%256;rand()%256);
+  
+  for(int i = 0; i < 289; i++)
+  {
+    leds[i] = nextleds[i];
+  }
+}
+
+
+//has a Xi in one solid color and changes like a rainbow pattern
+void solidXi(){
+  int bytemap[289];
+  for(int timecount=0;timecount < 10000;timecount++){ 
+    
+    for(int i=0;i < 289; i++){
+      if(bytemap[i] != 0x0){
+        //leds[pxmap(i%17,i/17)]==CRGB(
+      }
+    }
+  }
+}
+
+//has a rainbow pattern that is constantly changing on a Xi
+//convert bytemap matrix into array of addresses 
+void prideXi(){
+  int bytemap[289];
+ // fill_rainbow(leds,289,hue,7);
+  for(int i=0;i<289;i++){
+    if(bytemap[i]==0){
+      leds[pxmap(i%17,i/17)]=CRGB::Black;
+    }
+  }
   FastLED.show();
-  delay(100);
-  //while loop picks how many new elements it wants to add to frontier
-  //sees how many are feasible
-  
-  while(sizeof(frontier<250)){
-    int randomadvance = rand()%5;
-    int possiblearray[];
-    for(int j=0; j < randomadvance; j++){
-      possiblearray.push_back(floweradvancementhandler(std::random_shuffle(frontier.begin(),frontier.end())[0]));
-    }
-    for(int p=0;p < sizeof(possiblearray);p++){
-      if(std::find(frontier.begin(),frontier.end(),possiblearray[p]){
-      }
-      else{
-        leds[possiblearray[p]]=CRGB(rand()%256;rand()%256;rand()%256);
-      }
-  }
-     delay(5);
-     FastLED.show();
+  FastLED.delay(100);
 }
 
-int floweradvancementhandler(int frontier){
-  srand(time(NULL));
-  //check if on edge or border
-  //return random one around it
-  //if 0 , 16 ,17, 33 mod 34
-  if(frontier == 0){
-    rand2=rand()%2;
-    if(rand2==0){
-      return 1
-    }
-    if(rand2==1){
-      return 33
+boolean isinarray(int arrays[],int val){
+  for(int i=0;i<sizeof(arrays);i++){
+    if(arrays[i]==val){
+      return true;
     }
   }
-  else if(frontier==16){
-    rand2=rand()%2;
-    if(rand2==0){
-      return 15
-    }
-    if(rand2==1){
-      return 17
-    }
-  }
-  else if(frontier ==271){
-    rand2=rand()%2;
-    if(rand2==0){
-      return 270
-    }
-    if(rand2==1){
-      return 272
-    }
-  }
-  else if(frontier == 288){
-    rand2=rand()%2;
-    if(rand2==0){
-      return 287
-    }
-    if(rand2==1){
-      return 265
-    }
-  }
-  else if(frontier<17){
-    rand3=rand()%3;
-    if(rand3==0){
-      return frontier-1;
-    }
-    else if(rand3==1){
-      return frontier+17;
-    }
-    else{
-      return frontire+1;
-    }
-  }
-  else if(frontier>=271){
-    rand3=rand()%3;
-    if(rand3==0){
-      return frontier-1;
-    }
-    else if(rand3==1){
-      return frontier-17;
-    }
-    else{
-      return frontire+1;
-    }
-  }
-  else{
-    rand4=rand()%4;
-    if(rand4==0){
-      return frontier-17;
-    }
-    else if(rand4==1){
-      return frontier+1;
-    }
-    else if(rand4==2){
-      return frontier+17;
-    }
-    else{
-      return frontier-1;
-    }
-  }
-  
+  return false;
 }
 
 
-
-int rectangulartodisplay(int x,int y){
+int pxmap(int x,int y){
   //if y even then x normal
   //if y odd then 17-x is desired
   if(y%2==0){
@@ -271,6 +256,10 @@ int rectangulartodisplay(int x,int y){
     return 17*(y+1)-x-1;
   }
 }
+
+
+
+
 
 
 
