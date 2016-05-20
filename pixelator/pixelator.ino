@@ -275,9 +275,116 @@ int pxmap(int x,int y){
   }
 }
 
+//snake game
+//classes are snake, ledgrid, dot, positionhandler
+
+//snake maintains the positions and length of the snake
+struct position{
+		int x;
+		int y;
+	}dotposition, snakehead;
+
+position positions[];
+
+class snake{
+public:
+	int snakelength;
+	void incrementlength();
+	CRGB snakecolor = CRGB::Green;
+	string momentum;
+	
+} snake;
+
+void snake::incrementlength(){
+	snake.snakelength ++;
+}
 
 
+//ledgrid class that handles turning leds on and off 
+class ledgrid{
+	void initialization();
+	void drawsnake(position[]);
+};
 
+void ledgrid::initialization(){
+	for(int i=0;i<289;i++){
+		leds[i] = CRGB(0,0,0);
+	}
+}
+
+void ledgrid::drawsnake(positions[]){
+	for(int i=0;i<sizeof(positions[]);i++){
+		leds[pxmap(positions[i].x,positions[i].y)] = snake.snakecolor;
+	}
+}
+
+class dot{
+	void createdot();
+	CRGB dotcolor = CRGB(255,255,255);
+} dot;
+
+//We need to initialize a dot to a position in the main loop
+void dot::createdot(){
+	dotposition.x = rand()%17;
+	dotposition.y = rand()%17;
+	leds[pxmap(dotposition.x,dotpositin.y)] = dot.dotcolor;
+}
+
+
+//positionhandler takes care of button presses
+class positionhandler{
+	bool up();
+	bool down();
+	bool left();
+	bool right();
+};
+
+void positionhandler::up(){
+	if(snake.momentum == 'up'){
+		continue;
+	}
+	else if(snakehead.y == 0){
+		gameover();
+	}
+	else{
+		positions[]
+		//FUCK FUCK FUCK I WAS SUPPOSED TO HAVE A VECTOR SHIT SHIT SHIT <3
+		//Way to go Sludds
+		snake.momentum == 'up';
+	}
+}
+
+class collisionhandler{
+	
+};
+
+//Run this when game over occurs.
+void gameover(){
+	for(int i=0;i<289;i++){
+		leds[i] = CRGB(0,0,0);
+	}
+	
+	int bitmap = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1,
+			0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0,
+			0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0,
+			0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0,
+			0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0,
+			1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	for(int i=0;i<289;i++){
+	    if(bytemap[i]==0){
+	      leds[pxmap(i%17,i/17)]=CRGB::Black;
+	    }
+	  }
+}
+
+void snakegame{
+	while(true){
+		dot.createdot();
+		
+	}
+}
 
 
 

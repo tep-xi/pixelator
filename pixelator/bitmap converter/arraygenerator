@@ -5,11 +5,12 @@ def arraygenerator(imagestring):
     returnablearray = []
     im = Image.open(imagestring)
     px=im.load()
+    print px[0,0]
     for y in range(im.size[0]):
         for x in range(im.size[1]):
-            if px[x,y] == (0,0,0):
+            if px[x,y] == (0,0,0) or px[x,y] == 0:
                 returnablearray.append(1)
-            if px[x,y] == (255,255,255):
+            if px[x,y] == (255,255,255) or px[x,y] == 255:
                 returnablearray.append(0)
     print returnablearray
-arraygenerator('xibitmap.bmp')
+arraygenerator('gameoverimage.bmp')
